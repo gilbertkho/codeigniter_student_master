@@ -41,5 +41,6 @@ abstract class BaseController extends Controller
 
         // Preload any models, libraries, etc, here.
         // $this->session = service('session');
+        $this->nama = "UC Students Portal Gilbert";
     }
 }
