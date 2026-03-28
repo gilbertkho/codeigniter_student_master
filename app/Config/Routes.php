@@ -7,5 +7,13 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes->get('/', 'Students::index');
 
-$routes->get('/students', 'Students::index');
-$routes->get('/students/(:alpha)', 'Students::studentForm/$1');
+//students
+$routes->group('students', function($routes){
+    $routes->get('/', 'Students::index');
+    $routes->post('counter', 'Students::getLatestCounter');
+    $routes->post('add', 'Students::add');
+    $routes->post('edit', 'Students::edit');
+    $routes->post('delete', 'Students::delete');
+    $routes->post('search', 'Students::searchStudent');
+    $routes->get('(:segment)', 'Students::studentForm/$1');
+});

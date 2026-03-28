@@ -10,4 +10,10 @@ class MajorsModel extends Model
     protected $useTimeStamps = true;
     protected $createdField = 'created_at';
     protected $updatedField = 'updated_at';
+
+
+    public function getAllMajors(){
+        return $this->select('majors.id, majors.name')
+        ->findAll();
+    }
 }
