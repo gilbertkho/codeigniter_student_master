@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class MajorsModel extends Model
 {
     protected $table = 'majors';
-    protected $useTimeStamps = true;
+    protected $useTimestamps = true;
     protected $createdField = 'created_at';
     protected $updatedField = 'updated_at';
 

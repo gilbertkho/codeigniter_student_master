@@ -7,18 +7,18 @@ use CodeIgniter\Model;
 class StudentsModel extends Model
 {
     protected $table = 'students';
-    protected $useTimeStamps = true;
+    protected $useTimestamps = true;
     protected $createdField = 'created_at';
     protected $updatedField = 'updated_at';
     protected $allowedFields = [
         'name', 'student_id', 'email', 'major_id', 'gpa', 'enrollment_year', 'is_active'
     ];
 
-    public function getStudents($id = ''){
+    public function getStudents($id = '', $paginate = 10){
         if($id == ''){
             return $this->select('students.*, majors.name as major')
             ->join('majors','majors.id = students.major_id', 'left')
-            ->findAll();
+            ->paginate($paginate);
         }
         else{
             return $this->select('students.*, majors.name as major')
@@ -28,7 +28,7 @@ class StudentsModel extends Model
         }
     }
 
-    public function search($query){
+    public function search($query, $paginate = 10){
         return $this->select('students.*, majors.name as major')
         ->join('majors', 'majors.id =  students.major_id', 'left')
         ->groupStart()
@@ -38,7 +38,7 @@ class StudentsModel extends Model
             ->orLike('students.email', $query)
             ->orLike('students.enrollment_year', $query)
         ->groupEnd()
-        ->findAll();
+        ->paginate($paginate);
     }
 
     public function generateCounter($code){

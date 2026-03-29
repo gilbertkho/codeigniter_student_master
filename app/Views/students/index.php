@@ -78,6 +78,9 @@
                 </tbody>
             </table>
         </div>
+        <div class="card-footer text-center <?= $pager->getDetails()['pageCount'] > 1 ? '' : 'd-none' ?>">
+            <?= $pager->links() ?>
+        </div>
     </div>
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -132,7 +135,7 @@
         let students = <?= json_encode($students) ?>;
         let getStudent = students.filter((student) => student.id == id);
         selected = getStudent[0];
-        $('#selected_student').val(selected);
+        $('#selected_student').val(selected['id']);
         $("#selected_name").text(`: ${selected['name']}`);
         $("#selected_student_id").text(`: ${selected['student_id']}`);
         $("#selected_email").text(`: ${selected['email']}`);
@@ -157,7 +160,9 @@
 
     $("#search").on('change', function(e){
         if($(this).val() == '') {
-            console.log('KOSONG');
+            $("#search_result").empty();
+            $("#search_result").addClass('d-none');
+            $("#default").removeClass('d-none');
         }
     });
 

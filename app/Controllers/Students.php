@@ -25,10 +25,12 @@ class Students extends BaseController
         $students = $this->studentsModel->getStudents();
 
         $data = [
-            'title' => 'UC Students Portal',
+            'title' => 'UC Admin Dashboard - Students',
             'students' => $students,
+            'pager' => $this->studentsModel->pager
         ];
 
+        //dd($data['pager']->getDetails()['pageCount']);
         return view ('students/index', $data);
 
         // echo view('layout/header' , $data);
@@ -100,7 +102,13 @@ class Students extends BaseController
                     'required' => 'The major field is required' 
                 ]
             ],
-            'student_id' => 'required|is_unique[students.student_id]',
+            'student_id' => [
+                'rules' => 'required|is_unique[students.student_id]',
+                'errors' => [
+                    'required' => 'The student id field is required',
+                    'is_unique' => 'The student id must be unique'  
+                ]
+            ]
         ])){
             $validation = \Config\Services::validation();
             $data = [
@@ -173,7 +181,7 @@ class Students extends BaseController
     }
 
     public function delete(){
-        $id = $this->request->getVar('id');
+        $id = $this->request->getVar('id');        
         if(!$id){
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Student not found');
         }
