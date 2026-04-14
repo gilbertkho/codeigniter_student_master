@@ -14,11 +14,12 @@ class StudentsModel extends Model
         'name', 'student_id', 'email', 'major_id', 'gpa', 'enrollment_year', 'is_active'
     ];
 
-    public function getStudents($id = '', $paginate = 10){
+    public function getStudents($id = '', $data_per_page = 10){
         if($id == ''){
             return $this->select('students.*, majors.name as major')
             ->join('majors','majors.id = students.major_id', 'left')
-            ->paginate($paginate);
+            ->orderBy('students.updated_at', 'DESC')
+            ->paginate($data_per_page);
         }
         else{
             return $this->select('students.*, majors.name as major')
@@ -28,7 +29,7 @@ class StudentsModel extends Model
         }
     }
 
-    public function search($query, $paginate = 10){
+    public function search($query, $data_per_page = 10){
         return $this->select('students.*, majors.name as major')
         ->join('majors', 'majors.id =  students.major_id', 'left')
         ->groupStart()
@@ -38,7 +39,9 @@ class StudentsModel extends Model
             ->orLike('students.email', $query)
             ->orLike('students.enrollment_year', $query)
         ->groupEnd()
-        ->paginate($paginate);
+        ->orderBy('students.updated_at', 'DESC')
+        ->findAll();
+        // ->paginate($data_per_page);
     }
 
     public function generateCounter($code){

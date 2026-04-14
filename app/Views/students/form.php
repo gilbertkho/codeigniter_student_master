@@ -9,7 +9,6 @@
                 <a href="/students" class="text-decoration-none">Students List</a> / <?= ucfirst($info) ?> Student
             </div>
             <div class="card-body">
-
                 <form id="student_form" action="/students/<?= $info == 'add'? 'add' : 'edit' ?>" method="POST" >
                     <?= csrf_field(); ?>
                     <div class="mb-3">

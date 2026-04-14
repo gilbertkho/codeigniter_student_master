@@ -4,7 +4,7 @@
     $this->section('content');
 ?>
 <div class="main_content flex-grow-1 p-3">
-    <h1> Welcome to UC Students Master</h1>
+    <h1>Hi, <?= ucfirst(session()->get('name')) ?> Welcome to UC Students Master</h1>
     <?php if(session()->getFlashdata('message')) : ?>
         <div class="alert alert-success" role="alert" id="message">
             <?= session()->getFlashdata('message')?>
@@ -16,7 +16,17 @@
                 <i class="fa-solid fa-plus"></i>
                 Add Student
             </a>
-            <input type="text" id="search" class="form-control" placeholder="Search Student...">
+            <input type="text" id="search" class="form-control flex-grow-1" placeholder="Search Student...">
+            <form id="dataPerPageForm" action="/students" method="get" class="d-flex align-items-center" style="gap: 5px;"> 
+                <label for="data_per_page">
+                    Row
+                </label>
+                <select name="data_per_page" id="data_per_page" class="form-select" value="">
+                    <option value="5" <?= (isset($data_per_page) && $data_per_page == 5 ? 'selected' : '')?>>5</option>
+                    <option value="10" <?= (isset($data_per_page) && $data_per_page == 10 ? 'selected' : '')?>>10</option>
+                    <option value="20" <?= (isset($data_per_page) && $data_per_page == 20 ? 'selected' : '')?>>20</option>
+                </select>
+            </form>
         </div>
         <div class="table-responsive">
             <table class="table table-bordered">
@@ -33,8 +43,7 @@
                 </thead>
                 <tbody id="default">
                     <?php 
-                    // dd($students);
-                    $i = 0;
+                    $i = $pager->getDetails()['currentPage'] * $data_per_page - $data_per_page;
                     if(count($students) > 0) :
                         foreach($students as $student):
                             $i++;?>
@@ -78,7 +87,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="card-footer text-center <?= $pager->getDetails()['pageCount'] > 1 ? '' : 'd-none' ?>">
+        <div id="default_pager" class="card-footer text-center <?= $pager->getDetails()['pageCount'] > 1 ? '' : 'd-none' ?>">
             <?= $pager->links() ?>
         </div>
     </div>
@@ -129,7 +138,15 @@
 </div>
 
 <script>
+
+    $("#data_per_page").on('change', function(e) {
+        $("#dataPerPageForm").submit();
+    });
+
     let selected;
+    let search_result = [];
+    let typingTimer;
+    const waitTime = 500;
 
     const setModalData = (id) => {
         let students = <?= json_encode($students) ?>;
@@ -162,16 +179,17 @@
         if($(this).val() == '') {
             $("#search_result").empty();
             $("#search_result").addClass('d-none');
-            $("#default").removeClass('d-none');
+            $("#default, #default_pager").removeClass('d-none');
         }
     });
 
 
     $("#search").on('keyup', function(e){
+        clearTimeout(typingTimer);
         if(e.target.value.length < 2) {
             $("#search_result").empty();
             $("#search_result").addClass('d-none');
-            $("#default").removeClass('d-none');
+            $("#default, #default_pager").removeClass('d-none');
             return;
         }
         //console.log(e.target.value);
@@ -179,54 +197,58 @@
         let data = {
             query:  e.target.value
         }
-        $.ajax({
-            url: '/students/search',
-            data: data,
-            method: 'POST',
-            success: (response) => {
-                $("#search_result").empty();
-                $("#search_result").removeClass('d-none');
-                $("#default").addClass('d-none');
-                console.log(response.results);
-                if(response.results.length > 0){
-                    let result_element = ``;
-                    let i = 0;
-                    response.results.forEach((res) => {
-                    i++;
-                    result_element += 
-                    `<tr>
-                        <td>${i}</td>
-                        <td>${res['name']}</td>
-                        <td>${res['student_id']}</td>
-                        <td>${res['major']}</td>
-                        <td>${res['enrollment_year']}</td>
-                        <td>
-                            ${res['is_active'] == 1 ?
-                                '<p class="bg-success p-1 text-white d-inline rounded"> Active</p>'
-                                :
-                                '<p class="bg-danger p-1 text-white d-inline rounded"> Inactive </p>'
-                            }
-                        </td>
-                        <td class="d-flex flex-wrap flex-md-nowrap" style="gap: 5px;">
-                            <button class="btn_det btn btn-sm border" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" modal-data=${res['id']}>
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
-                            <a href="<?= base_url('students/edit?id=' . $student['id']) ?>" class="btn btn-sm btn-primary">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </a>
-                            <button class="btn_del btn btn-sm btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" modal-data=${res['id']}>
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>`
-                    });
-                    $("#search_result").append(result_element);
+
+        typingTimer = setTimeout(() => {
+            $.ajax({
+                url: '/students/search',
+                data: data,
+                method: 'POST',
+                success: (response) => {
+                    $("#search_result").empty();
+                    $("#search_result").removeClass('d-none');
+                    $("#default, #default_pager").addClass('d-none');
+                    console.log(response.results);
+                    if(response.results.length > 0){
+                        let result_element = ``;
+                        let i = 0;
+                        response.results.forEach((res) => {
+                        i++;
+                        result_element += 
+                        `<tr>
+                            <td>${i}</td>
+                            <td>${res['name']}</td>
+                            <td>${res['student_id']}</td>
+                            <td>${res['major']}</td>
+                            <td>${res['enrollment_year']}</td>
+                            <td>
+                                ${res['is_active'] == 1 ?
+                                    '<p class="bg-success p-1 text-white d-inline rounded"> Active</p>'
+                                    :
+                                    '<p class="bg-danger p-1 text-white d-inline rounded"> Inactive </p>'
+                                }
+                            </td>
+                            <td class="d-flex flex-wrap flex-md-nowrap" style="gap: 5px;">
+                                <button class="btn_det btn btn-sm border" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" modal-data=${res['id']}>
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                                <a href="<?= base_url('students/edit?id=' . $student['id']) ?>" class="btn btn-sm btn-primary">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                                <button class="btn_del btn btn-sm btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" modal-data=${res['id']}>
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`
+                        });
+                        $("#search_result").append(result_element);
+                    }
+                },
+                error: (e) => {
+                    console.log(e);
                 }
-            },
-            error: (e) => {
-                console.log(e);
-            }
-        })
+            })
+        },waitTime);
+
     })
 </script>
 <?php 

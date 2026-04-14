@@ -16,18 +16,24 @@ class Students extends BaseController
     }
     
     public function index(){
+        session();
         // $students = [];
         //return view('students/index', ['students' => $students]);
 
         // $db = \Config\Database::connect();
         // $students = $db->query('SELECT * FROM students')->getResultArray();
         // dd($students);
-        $students = $this->studentsModel->getStudents();
+        $data_per_page = 10;
+        if($this->request->getVar('data_per_page') != null){
+            $data_per_page = (int) $this->request->getVar('data_per_page');
+        }
+        $students = $this->studentsModel->getStudents('',$data_per_page);
 
         $data = [
             'title' => 'UC Admin Dashboard - Students',
             'students' => $students,
-            'pager' => $this->studentsModel->pager
+            'pager' => $this->studentsModel->pager,
+            'data_per_page' => $data_per_page
         ];
 
         //dd($data['pager']->getDetails()['pageCount']);
@@ -133,7 +139,7 @@ class Students extends BaseController
 
         session()->setFlashdata('message', 'Data Successfully Created!');
 
-        return redirect()->to('/students');        
+        return redirect()->to('/students');
     }
 
     public function edit(){
@@ -195,15 +201,18 @@ class Students extends BaseController
 
     public function searchStudent(){
         $query = $this->request->getVar('query');
+        $data_per_page = $this->request->getVar('data_per_page') ? (int) $this->request->getVar('data_per_page') : 10;
         $data = [
             'status' => 'success',
             'results' => []
         ];
         //echo $query;
         try{
-            $getData = $this->studentsModel->search($query);
+            $getData = $this->studentsModel->search($query, $data_per_page);
             if($getData){
                 $data['results'] = $getData;
+                // $data['pager'] = $this->studentsModel->pager;
+                // $data['data_per_page'] = $data_per_page;
             }
         }
         catch(\Throwable $e){

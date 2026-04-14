@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" href="<?= base_url('style.css') ?>"/>
 </head>
 <body>
+    <?= $this->include('layout/header') ?>
     <div class="d-flex content">
         <?= $this->include('layout/sidebar') ?>
         <?= $this->renderSection('content') ?>
