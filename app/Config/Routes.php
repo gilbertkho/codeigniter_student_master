@@ -9,17 +9,20 @@ $routes->get('/', 'Admin::index');
 
 //students
 $routes->group('students', function($routes){
-    $routes->get('/', 'Students::index');
-    $routes->post('counter', 'Students::getLatestCounter');
-    $routes->post('add', 'Students::add');
-    $routes->post('edit', 'Students::edit');
-    $routes->post('delete', 'Students::delete');
-    $routes->post('search', 'Students::searchStudent');
-    $routes->get('(:segment)', 'Students::studentForm/$1');
+    $routes->get('/', 'Students::index', ['filter' => 'auth']);
+    $routes->post('counter', 'Students::getLatestCounter', ['filter' => 'auth']);
+    $routes->post('add', 'Students::add', ['filter' => 'auth']);
+    $routes->post('edit', 'Students::edit', ['filter' => 'auth']);
+    $routes->post('delete', 'Students::delete', ['filter' => 'auth']);
+    $routes->post('search', 'Students::searchStudent', ['filter' => 'auth']);
+    $routes->get('(:segment)', 'Students::studentForm/$1', ['filter' => 'auth']);
 });
 
-$routes->get('login', 'Admin::index');
-$routes->post('login', 'Admin::login');
-$routes->get('register', 'Admin::registerForm');
-$routes->post('register', 'Admin::registerUser');
+$routes->get('login', 'Admin::index', ['filter' => 'noauth']);
+$routes->post('login', 'Admin::login', ['filter' => 'noauth']);
+$routes->get('register', 'Admin::registerForm', ['filter' => 'noauth']);
+$routes->post('register', 'Admin::registerUser', ['filter' => 'noauth']);
 $routes->get('logout', 'Admin::logout');
+$routes->group('admin', function($routes){
+    $routes->get('profile', 'Admin::profile', ['filter' => 'auth']);
+});

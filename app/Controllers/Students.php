@@ -16,7 +16,6 @@ class Students extends BaseController
     }
     
     public function index(){
-        session();
         // $students = [];
         //return view('students/index', ['students' => $students]);
 

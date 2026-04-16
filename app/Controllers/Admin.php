@@ -104,4 +104,11 @@ class Admin extends BaseController
 
         return redirect()->to('login');
     }
+
+    public function profile(){
+        $data = [
+            'title' => 'Admin Profile',
+        ];
+        return view('admin/profile', $data);
+    }
 }
