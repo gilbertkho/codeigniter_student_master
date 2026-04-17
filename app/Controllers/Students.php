@@ -158,13 +158,7 @@ class Students extends BaseController
             ],
             'student_id' => "required|is_unique[students.student_id,id,{$id}]",
         ])){
-            $validation = \Config\Services::validation();
-            $data = [
-                "validation" => $validation,
-                "info" => 'edit',
-                "title" => 'Edit Student'
-            ];
-            //return view('students/form', $data);
+            $validation = \Config\Services::validation();            
             return redirect()->to('/students/edit?id='.$id)->withInput()->with('validation', $validation);
         }
         

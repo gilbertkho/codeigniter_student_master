@@ -3,7 +3,7 @@
         <div class="profile_img d-flex align-items-center gap-2 position-relative">
             <img src="https://ui-avatars.com/api/?name=<?= session()->get('name') ?>&background=random" alt="Profile Image" class="rounded-circle" width="40" height="40">
             <span class="profile_name"><?= session()->get('name') ?></span>
-            <div id="profile_dropdown" class="bg-light p-2 d-none">
+            <div id="profile_dropdown" class="bg-light p-2 d-none d-flex flex-column">
                 <a href="/admin/profile">Profile</a>
                 <a href="/logout">Logout</a>
             </div>

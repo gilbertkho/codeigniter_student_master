@@ -25,4 +25,5 @@ $routes->post('register', 'Admin::registerUser', ['filter' => 'noauth']);
 $routes->get('logout', 'Admin::logout');
 $routes->group('admin', function($routes){
     $routes->get('profile', 'Admin::profile', ['filter' => 'auth']);
+    $routes->post('edit', 'Admin::edit', ['filter' => 'auth']);
 });

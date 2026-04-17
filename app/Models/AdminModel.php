@@ -30,4 +30,11 @@ class AdminModel extends Model
         }
         return false;
     }
+
+    public function getAdminById($id){
+        return $this->select('admin.*')
+        ->where('admin.id', $id)
+        //->where('admin.is_active', 1)
+        ->first();
+    }
 }

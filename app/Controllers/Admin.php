@@ -51,13 +51,24 @@ class Admin extends BaseController
 
         $checkEmail = $this->adminModel->getAdmin($email);
         //dd($checkEmail);
+        $data = [
+            'message' => '',
+            'type' => 'warning'
+        ];
         if(!$checkEmail || $checkEmail['admin_count'] < 1){
-            session()->setFlashdata('message', 'User not found!');
+            $data['message'] = 'User not found!';
+            $data['type'] = 'warning';
+            session()->setFlashdata('message', json_encode($data));
             return redirect()->to('login');
         }
         else{
             $check = $this->adminModel->getAdmin($email, $pass);
             //dd($check);
+            if(!$check || $check == null){
+                $data['message'] = 'Please check your information again';
+                session()->setFlashdata('message', json_encode($data));
+                return redirect()->to('login');
+            }
             $this->setUserMethod($check);
             return redirect()->to('/students');
         }
@@ -99,16 +110,63 @@ class Admin extends BaseController
             'email' => $this->request->getVar('email'),
             'password' => $this->request->getVar('password'),
         ]);
-
-        session()->setFlashdata('message', 'User successfully registered! Please wait for admin approval or contact the administrator.');
+        $data = [
+            'message' => 'User successfully registered! Please wait for admin approval or contact the administrator.',
+            'type' => 'success'
+        ];
+        session()->setFlashdata('message', json_encode($data));
 
         return redirect()->to('login');
     }
 
     public function profile(){
+        $id = session()->get('id');
+        $admin = $this->adminModel->getAdminById($id);
+        $validation = session()->getFlashdata('validation');
         $data = [
             'title' => 'Admin Profile',
+            'validation' => $validation,
+            'admin' => $admin,
         ];
         return view('admin/profile', $data);
+    }
+
+    public function edit(){
+        //dd($this->request->getVar());
+        $id = session()->get('id');
+        if(!$id){
+            return redirect()->to('logout');
+        }
+        if(!$this->validate([
+            'name' => 'required',
+            'email' => "required|is_unique[admin.email,id,{$id}]|valid_email",
+            'password' => 'required|min_length[6]',
+            'confirm_password' => [
+                    'rules' => 'required|matches[password]',
+                    'errors' => [
+                        'required' => 'Confirm Password is required.',
+                        'matches' => 'Confirm Password must match the Password field.'
+                    ]
+            ]
+        ])){
+            $validation = \Config\Services::validation();
+            return redirect()->to('admin/profile')->withInput()->with('validation', $validation);
+        }
+
+        $this->adminModel->save([
+            'id' => $id,
+            'name' => $this->request->getVar('name'),
+            'email' => $this->request->getVar('email'),
+            'password' => $this->request->getVar('password'),
+        ]);
+
+        //refresh session
+        $user = $this->adminModel->getAdminById($id);
+
+        $this->setUserMethod($user);
+
+        session()->setFlashdata('message', 'Admin profile successfully edited!');
+
+        return redirect()->to('admin/profile');
     }
 }

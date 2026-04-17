@@ -17,9 +17,11 @@
     <form action="/login" method="POST">
         <div class="login-container">
             <h3>Admin Login</h3>
-            <?php if(session()->getFlashdata('message')) : ?>
-                <div class="alert alert-info" role="alert" id="message">
-                    <?= session()->getFlashdata('message')?>
+            <?php if(session()->getFlashdata('message')) : 
+                $message = json_decode(session()->getFlashdata('message'), true);
+                ?>
+                <div class="alert alert-<?= $message['type']?> ?>" role="alert" id="message">
+                    <?= $message['message'] ?>
                 </div>
             <?php endif ?>
             <div>
