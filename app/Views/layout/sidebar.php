@@ -12,9 +12,9 @@
             <i class="fa fa-users" aria-hidden="true"></i>
             <h5 class="mb-0 ms-3 d-none d-xl-block">Students</h5>
         </a> 
-        <!-- <a href="/students" class="menu_list p-2 border-bottom border-1 d-flex align-items-center justify-content-center justify-content-xl-start">
+        <a href="/majors" class="menu_list p-2 border-bottom border-1 d-flex align-items-center justify-content-center justify-content-xl-start">
             <i class="fa-solid fa-book"></i>
             <h5 class="mb-0 ms-3 d-none d-xl-block">Majors</h5>
-        </a> -->
+        </a>
     </div>
 </div>

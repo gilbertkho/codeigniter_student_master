@@ -27,3 +27,12 @@ $routes->group('admin', function($routes){
     $routes->get('profile', 'Admin::profile', ['filter' => 'auth']);
     $routes->post('edit', 'Admin::edit', ['filter' => 'auth']);
 });
+
+$routes->group('majors', function($routes){
+    $routes->get('/', 'Majors::index', ['filter' => 'auth']);
+    $routes->post('add', 'Majors::add', ['filter' => 'auth']);
+    $routes->post('edit', 'Majors::edit', ['filter' => 'auth']);
+    $routes->post('delete', 'Majors::delete', ['filter' => 'auth']);
+    $routes->post('search', 'Majors::searchMajor', ['filter' => 'auth']);
+    $routes->get('(:segment)', 'Majors::majorForm/$1', ['filter' => 'auth']);
+});

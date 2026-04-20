@@ -44,7 +44,7 @@ class Students extends BaseController
     }
     
     public function studentForm($info = null){
-        $majors = $this->majorsModel->getAllMajors();
+        $majors = $this->majorsModel->getMajors(null, 0);
         $validation = session()->getFlashdata('validation');
         $data = [
             'title' => '',
