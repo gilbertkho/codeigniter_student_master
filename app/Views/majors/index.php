@@ -94,32 +94,16 @@
                 <div class="col-4">Name</div>
                 <div class="col-8" id="selected_name"></div>
             </div>
-            <div class="row">
-                <div class="col-4">Student Id</div>
-                <div class="col-8" id="selected_student_id"></div>
-            </div>
-            <div class="row">
-                <div class="col-4">Email</div>
-                <div class="col-8" id="selected_email"></div>
-            </div>
-            <div class="row">
-                <div class="col-4">Major</div>
-                <div class="col-8" id="selected_major"></div>
-            </div>
-            <div class="row">
-                <div class="col-4">Year of Enrollment</div>
-                <div class="col-8" id="selected_yoe"></div>
-            </div>
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-4">Status</div>
                 <div class="col-8" id="selected_status"></div>
-            </div>
+            </div> -->
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             <form action="/majors/delete" method="POST" id="delete_form">
                 <?= csrf_field(); ?>
-                <input type="hidden" id="selected_student" name="id" value="">
+                <input type="hidden" id="selected_major" name="id" value="">
                 <button type="submit" class="btn btn-primary" id="delete">Save changes</button>
             </form>
           </div>
@@ -130,6 +114,27 @@
 <script>
     let typing;
     let data_per_page = <?= $data_per_page ?>;
+
+    $('.btn_det').on('click', function(){
+        let data = <?= json_encode($majors) ?>;
+        let id = $(this).attr('modal-data');
+        let selected = data.find(major => major.id == id);
+        $('#selected_name').text(selected.name);
+        $('#exampleModalLabel').text('Major Detail');
+        $("#selected_major").val(selected.id);
+        $('#delete_form').hide();
+    });
+
+    $('.btn_del').on('click', function(){
+        let data = <?= json_encode($majors) ?>;
+        let id = $(this).attr('modal-data');
+        let selected = data.find(major => major.id == id);
+        $('#selected_name').text(selected.name);
+        $('#exampleModalLabel').text('Are you sure to delete this major?');
+        $("#selected_major").val(selected.id);
+        $('#delete_form').show();
+    });
+
 
     $("#data_per_page").on('change', function(){
         $('#dataPerPageForm').submit();
